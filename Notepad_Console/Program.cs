@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-class Program
+class Notepad_Program
 {
 	static void Main()
 	{
@@ -10,7 +10,7 @@ class Program
 		notepad.Start();
 		while (true)
 		{
-			Console.WriteLine("(1)Add\n(2)Delete\n(3)List\n");
+			Console.WriteLine("(1)Add\n(2)Delete\n(3)List\n(4)Quit\n");
 			string choice = Console.ReadLine();
 			if (int.TryParse(choice, out int a))
 			{
@@ -30,6 +30,10 @@ class Program
 						{
 							notepad.List();
 							break;
+						}
+					case 4:
+						{
+							return;
 						}
 					default:
 						{
