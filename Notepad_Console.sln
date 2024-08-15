@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notepad_Console", "Denemealanı\Notepad_Console.csproj", "{0A45AAFC-FC76-4008-8D50-9505EC93A318}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notepad_Console", "Notepad_Console\Notepad_Console.csproj", "{B1AAF9D1-30BC-40C5-808C-098C3F07CE0D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0A45AAFC-FC76-4008-8D50-9505EC93A318}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A45AAFC-FC76-4008-8D50-9505EC93A318}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A45AAFC-FC76-4008-8D50-9505EC93A318}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A45AAFC-FC76-4008-8D50-9505EC93A318}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1AAF9D1-30BC-40C5-808C-098C3F07CE0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1AAF9D1-30BC-40C5-808C-098C3F07CE0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1AAF9D1-30BC-40C5-808C-098C3F07CE0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1AAF9D1-30BC-40C5-808C-098C3F07CE0D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {3BA76936-F0E8-4CE0-B1CA-75839E2E889A}
+		SolutionGuid = {72C05E59-AB18-4E56-8C61-B02285FDEC74}
 	EndGlobalSection
 EndGlobal
