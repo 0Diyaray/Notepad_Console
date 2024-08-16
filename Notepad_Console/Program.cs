@@ -10,7 +10,7 @@ class Notepad_Program
 		notepad.Start();
 		while (true)
 		{
-			Console.WriteLine("(1)Add\n(2)Delete\n(3)List\n(4)Quit\n");
+			Console.WriteLine("(1)Add\n(2)Delete\n(3)List\n(4)TrashBin\n(5)Quit\n");
 			string choice = Console.ReadLine();
 			if (int.TryParse(choice, out int a))
 			{
@@ -33,6 +33,11 @@ class Notepad_Program
 						}
 					case 4:
 						{
+							notepad.Trashbin();
+							break;
+						}
+					case 5:
+						{
 							return;
 						}
 					default:
@@ -53,12 +58,14 @@ class Note
 {
 	public string title;
 	public string content;
+	public bool exist = true;
 	public DateTime date = DateTime.Now;
 }
 class Notepad
 {
 	private string FilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Text.txt");
-	List<Note> Notes = new List<Note>();
+	private  List<Note> Notes = new List<Note>();
+	private  List<Note> Notes_Deleted = new List<Note>();
 	public void Add()
 	{
 		Note note = new Note();
@@ -85,8 +92,9 @@ class Notepad
 			{
 				if (index >= 0 && index < Notes.Count)
 				{
+					Notes_Deleted.Add(Notes[index]);
 					Notes.RemoveAt(index);
-					Console.WriteLine("Note removed.");
+					Console.WriteLine("Note moved to Trashbin.");
 					break;
 				}
 				else
@@ -96,6 +104,7 @@ class Notepad
 			}
 			else if (a == "reset")
 			{
+				Notes.ForEach(x => Notes_Deleted.Add(x));
 				Notes.Clear();
 				Console.WriteLine("All notes moved to trashbin");
 				break;
@@ -111,7 +120,7 @@ class Notepad
 	{
 		Console.WriteLine("ID       Time        Title");
 		Console.WriteLine("--  ---------------- -----");
-		for (int i = 0; i < Notes.Count; i++)
+		for (int i = 0; i < Notes.Count ; i++)
 		{
 			Console.WriteLine($"{i.ToString("d2")} {Notes[i].date.ToString("g")} {Notes[i].title}");
 		}
@@ -145,6 +154,16 @@ class Notepad
 		}
 	}
 
+	public void Trashbin()
+	{
+		Console.WriteLine("ID  Title");
+		Console.WriteLine("--  -----");
+		for (int i = 0; i < Notes_Deleted.Count; i++)
+		{
+			Console.WriteLine($"{i.ToString("d2")} {Notes_Deleted[i].date.ToString("g")} {Notes_Deleted[i].title}");
+		}
+	}
+
 	private void SaveNotes()
 	{
 		using (StreamWriter writer = new StreamWriter(FilePath))
@@ -152,7 +171,11 @@ class Notepad
 
 			foreach (var note in Notes)
 			{
-				writer.WriteLine($"{note.date.ToString("o")}|{note.title}|{note.content}");
+				writer.WriteLine($"{note.date.ToString("o")}|{note.title}|{note.content}|{note.exist}");
+			}
+			foreach (var note in Notes_Deleted)
+			{
+				writer.WriteLine($"{note.date.ToString("o")}|{note.title}|{note.content}|{note.exist}");
 			}
 		}
 
@@ -171,7 +194,15 @@ class Notepad
 				note.date = myDate;
 				note.title = a[1];
 				note.content = a[2];
-				Notes.Add(note);
+				note.exist = a[3] == "true";
+				if (note.exist)
+				{
+					Notes.Add(note);
+				}
+				else
+				{
+					Notes_Deleted.Add(note);
+				}
 			}
 		}
 	}
