@@ -58,7 +58,6 @@ class Note
 {
 	public string title;
 	public string content;
-	public bool exist = true;
 	public DateTime date = DateTime.Now;
 }
 class Notepad
@@ -78,92 +77,121 @@ class Notepad
 	}
 	public void Delete()
 	{
-		Console.WriteLine("ID  Title");
-		Console.WriteLine("--  -----");
-		for (int i = 0; i < Notes.Count; i++)
+		int select_to_delete = ListAll(Notes, true, "Enter id of note to delete or type \"reset\" to delete all. (Type \"back\" to get back)","reset");
+		if (select_to_delete >= 0)
 		{
-			Console.WriteLine($"{i.ToString("d2")} {Notes[i].title}");
+			Notes_Deleted.Add(Notes[select_to_delete]);
+			Notes.RemoveAt(select_to_delete);
+			SaveNotes();
 		}
-		Console.Write("Enter the note id to delete. Enter \"reset\" to delete all:");
-		while (true)
+		else if (select_to_delete == -2)
 		{
-			string a = Console.ReadLine();
-			if (int.TryParse(a, out int index))
+			for (int i = Notes.Count - 1; i >= 0; i--)
 			{
-				if (index >= 0 && index < Notes.Count)
-				{
-					Notes_Deleted.Add(Notes[index]);
-					Notes.RemoveAt(index);
-					Console.WriteLine("Note moved to Trashbin.");
-					break;
-				}
-				else
-				{
-					Console.WriteLine("Index out of range.");
-				}
+				Notes_Deleted.Add(Notes[i]);
+				Notes.RemoveAt(i);
 			}
-			else if (a == "reset")
-			{
-				Notes.ForEach(x => Notes_Deleted.Add(x));
-				Notes.Clear();
-				Console.WriteLine("All notes moved to trashbin");
-				break;
-			}
-			else
-			{
-				Console.WriteLine("Enter a valid number");
-			}
+			SaveNotes();
 		}
-		SaveNotes();
 	}
 	public void List()
 	{
-		Console.WriteLine("ID       Time        Title");
-		Console.WriteLine("--  ---------------- -----");
-		for (int i = 0; i < Notes.Count ; i++)
+		int select_to_list = ListAll(Notes, true,"Enter id to view. (Type \"back\" to get back)");
+		if (select_to_list >= 0)
 		{
-			Console.WriteLine($"{i.ToString("d2")} {Notes[i].date.ToString("g")} {Notes[i].title}");
+			Console.WriteLine($"Title:{Notes[select_to_list].title}  Date:{Notes[select_to_list].date.ToString("g")}\n{Notes[select_to_list].content}");
 		}
-
-		Console.WriteLine("Enter note id to view");
-		while (true)
-		{
-			string input = Console.ReadLine();
-			if (int.TryParse(input, out int result))
-			{
-				if (result >= 0 && result < Notes.Count)
-				{
-					int list_choice = result;
-					Console.WriteLine($"Title:{Notes[list_choice].title} Date:{Notes[list_choice].date.ToString("g")}\n{Notes[list_choice].content}");
-					break;
-				}
-				else
-				{
-					Console.WriteLine("Index out of range.");
-				}
-			}
-			else if (input == "quit")
-			{
-				break;
-			}
-			else
-			{
-				Console.WriteLine("Enter a valid number or quit by entering \"quit\"");
-			}
-			
-		}
+		else { }
 	}
 
 	public void Trashbin()
 	{
-		Console.WriteLine("ID  Title");
-		Console.WriteLine("--  -----");
-		for (int i = 0; i < Notes_Deleted.Count; i++)
+		ListAll(Notes_Deleted, false,"");
+		Console.WriteLine("(1)Delete Permanently\n(2)Recover\n(3)Back");
+		while (true)
 		{
-			Console.WriteLine($"{i.ToString("d2")} {Notes_Deleted[i].date.ToString("g")} {Notes_Deleted[i].title}");
+			int Trash_choice = Getint(1,4);
+			if (Trash_choice == 1)
+			{
+				Console.WriteLine("Enter id to delete permanently");
+				int delete_permanently = Getint(0, Notes_Deleted.Count);
+				if (delete_permanently >= 0 && delete_permanently < Notes_Deleted.Count)
+				{
+					Notes_Deleted.RemoveAt(delete_permanently);
+					; break;
+				}
+				else { break; }
+			}
+			else if (Trash_choice == 2)
+			{
+				Console.WriteLine("Enter id of note to recover");
+				int recover = Getint(0, Notes_Deleted.Count);
+				if (recover >= 0 && recover < Notes_Deleted.Count)
+				{
+					Notes.Add(Notes_Deleted[recover]);
+					Notes_Deleted.RemoveAt(recover);
+					break;
+				}
+				else { break; }
+			}
+			else if (Trash_choice == -1)
+			{
+				break;
+			}
+			else if (Trash_choice == 3)
+			{
+				break;
+			}
 		}
+		SaveNotes();
 	}
 
+	private int ListAll(List<Note> List,bool choose,string show = "Enter a number",string special = "giveto")
+	{
+		Console.WriteLine("ID  Title");
+		Console.WriteLine("--  -----");
+		for (int i = 0; i < List.Count; i++)
+		{
+			Console.WriteLine($"{i.ToString("d2")} {List[i].date.ToString("g")} {List[i].title}");
+		}
+		if (choose)
+		{
+			Console.WriteLine($"{show}");
+			while (true)
+			{
+				string input = Console.ReadLine();
+				if (int.TryParse(input, out int result))
+				{
+					if (result >= 0 && result < List.Count)
+					{
+						int list_choice = result;
+						return list_choice;
+					}
+					else
+					{
+						Console.WriteLine("Index out of range.");
+					}
+				}
+				else if (input == "back")
+				{
+					return -1;
+				}
+				else if (input == special && special !="giveto")
+				{
+					return -2;
+				}
+				else
+				{
+					Console.WriteLine("Enter a valid number or quit by entering \"back\"");
+				}
+
+			}
+		}
+		else 
+		{ 
+			return 1; 
+		}
+	}
 	private void SaveNotes()
 	{
 		using (StreamWriter writer = new StreamWriter(FilePath))
@@ -171,11 +199,11 @@ class Notepad
 
 			foreach (var note in Notes)
 			{
-				writer.WriteLine($"{note.date.ToString("o")}|{note.title}|{note.content}|{note.exist}");
+				writer.WriteLine($"{note.date.ToString("o")}|{note.title}|{note.content}|true");
 			}
 			foreach (var note in Notes_Deleted)
 			{
-				writer.WriteLine($"{note.date.ToString("o")}|{note.title}|{note.content}|{note.exist}");
+				writer.WriteLine($"{note.date.ToString("o")}|{note.title}|{note.content}|false");
 			}
 		}
 
@@ -194,8 +222,7 @@ class Notepad
 				note.date = myDate;
 				note.title = a[1];
 				note.content = a[2];
-				note.exist = a[3] == "true";
-				if (note.exist)
+				if (a[3] == "true")
 				{
 					Notes.Add(note);
 				}
@@ -216,5 +243,34 @@ class Notepad
 		{
 			SaveNotes();
 		}
+	}
+	public static int Getint(int min, int max)
+	{
+		while (true)
+		{
+			string a = Console.ReadLine();
+			if (int.TryParse(a, out int b))
+			{
+				if (min <= b && b < max)
+				{
+					return b;
+				}
+				else 
+				{
+					Console.WriteLine("Number out of range. Try Again...");
+					continue;
+				}
+			}
+			else if (a == "back")
+			{
+				return -1;
+			}
+			else
+			{
+				Console.WriteLine("Enter a valid value (Integer) or (Type \"back\" to get back)");
+				continue;
+			}
+		}
+
 	}
 }
